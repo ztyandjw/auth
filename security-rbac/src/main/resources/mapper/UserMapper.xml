@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eci.security.rbac.dao.UserDAO">
+
+    <sql id="FIELDS">
+        id, username, password, enable, no_expired,
+        credential_no_expired, no_lock, app_id, profile_id, create_time, update_time,deleted, update_user, create_user
+    </sql>
+
+    <select id="selectByNameAndAppid"  resultType="UserDO">
+        SELECT
+        <include refid="FIELDS" />
+        FROM sec_user
+        WHERE username = #{username} AND app_id = #{appid}
+        LIMIT 1
+    </select>
+
+
+</mapper>

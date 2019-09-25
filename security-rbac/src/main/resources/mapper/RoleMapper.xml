@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eci.security.rbac.dao.RoleDAO">
+
+    <sql id="FIELDS">
+        id, role_name, app_id, sec_role.create_time, sec_role.update_time, sec_role.deleted, sec_role.update_user, sec_role.create_user
+    </sql>
+
+    <select id="getRolesByUserid"  resultType="RoleDO">
+        SELECT
+        <include refid="FIELDS" />
+        FROM sec_role left
+        join sec_user_role on sec_role.id = sec_user_role.role_id where sec_user_role.user_id = #{userid};
+    </select>
+
+
+</mapper>

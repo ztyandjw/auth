@@ -1,0 +1,119 @@
+package com.eci.security.rbac.common.vo;
+
+import com.eci.security.rbac.constant.Consts;
+import com.eci.security.rbac.common.dataobject.RoleDO;
+import com.eci.security.rbac.common.dataobject.UserDO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.collect.Lists;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserPrincipal implements UserDetails {
+    /**
+     * 主键
+     */
+    private Long id;
+
+    /**
+     * 用户名
+     */
+    private String username;
+
+    /**
+     * 密码
+     */
+    @JsonIgnore
+    private String password;
+
+    private Integer enabled;
+
+    private Integer noExpired;
+
+    private Integer credentialNoExpired;
+
+    private Integer noLock;
+
+
+
+    /**
+     * 创建时间
+     */
+    private Date createTime;
+
+    /**
+     * 更新时间
+     */
+    private Date updateTime;
+
+    /**
+     * 用户角色列表
+     */
+    private List<String> roles;
+
+//    /**
+//     * 用户权限列表
+//     */
+//    private Collection<? extends GrantedAuthority> authorities;
+
+    public static UserPrincipal createUser(UserDO user, List<RoleDO> roles) {
+        List<String> roleNames = roles.stream()
+                .map(RoleDO::getRoleName)
+                .collect(Collectors.toList());
+
+//        List<GrantedAuthority> authorities = permissions.stream()
+//                .filter(permission -> StrUtil.isNotBlank(permission.getPermission()))
+//                .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
+//                .collect(Collectors.toList());
+
+        return new UserPrincipal(user.getId(), user.getUsername(), user.getPassword(), user.getEnable(), user.getNoExpired(), user.getCredentialNoExpired(), user.getNoLock(),  user.getCreateTime(), user.getUpdateTime(), roleNames);
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Lists.newArrayList();
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return Objects.equals(noExpired, Consts.User.NO_EXPIRED);
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return Objects.equals(noLock, Consts.User.NO_LOCK);
+
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return Objects.equals(credentialNoExpired, Consts.User.CREDENTIAL_NO_EXPIRED);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return Objects.equals(enabled, Consts.User.ENABLED);
+    }
+}
