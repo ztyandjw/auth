@@ -8,6 +8,7 @@ import com.eci.security.rbac.core.UserNamePasswordAppidAuthenticationToken;
 import com.eci.security.rbac.dao.RoleDAO;
 import com.eci.security.rbac.dao.UserDAO;
 import com.eci.security.rbac.service.UserServiceImpl;
+import com.eci.security.rbac.util.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ public class AuthController {
     @Autowired
     private UserServiceImpl userService;
 
+    @Autowired
+    private JWTUtil jwtUtil;
+
     @GetMapping("/get")
     public String test() {
         List<RoleDO> r = roleDAO.getRolesByUserid(1L);
@@ -52,7 +56,8 @@ public class AuthController {
         Authentication authentication = authenticationManager.authenticate(new UserNamePasswordAppidAuthenticationToken(authLoginBO.getUsername(), authLoginBO.getPassword(), authLoginBO.getAppId()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 //
-//        String jwt = jwtUtil.createJWT(authentication,loginRequest.getRememberMe());
+        String jwt = jwtUtil.createJWT(authentication);
+        return jwt;
 //        return ApiResponse.ofSuccess(new JwtResponse(jwt));
     }
 //
