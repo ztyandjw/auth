@@ -50,15 +50,11 @@ public class AuthController {
     }
 
     @PostMapping("login")
-
-    public String login(@RequestBody @Validated AuthLoginBO authLoginBO) {
-
+    public CommonResult<String> login(@RequestBody @Validated AuthLoginBO authLoginBO) {
         Authentication authentication = authenticationManager.authenticate(new UserNamePasswordAppidAuthenticationToken(authLoginBO.getUsername(), authLoginBO.getPassword(), authLoginBO.getAppId()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-//
         String jwt = jwtUtil.createJWT(authentication);
-        return jwt;
-//        return ApiResponse.ofSuccess(new JwtResponse(jwt));
+        return CommonResult.success(jwt);
     }
 //
 //    protected AuthenticationManager getAuthenticationManager() {

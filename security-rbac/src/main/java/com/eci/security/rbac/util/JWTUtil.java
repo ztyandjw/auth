@@ -49,14 +49,21 @@ public class JWTUtil {
                 .signWith(SignatureAlgorithm.HS256, jwtConfig.getKey())
                 .claim("roles", roles);
         builder.setExpiration(null);
-        LocalDateTime localDateTime = LocalDateTime.now().minusSeconds(600);
+        LocalDateTime localDateTime = LocalDateTime.now().plusSeconds(600);
         Date expireDate =  Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
         builder.setExpiration(expireDate);
         String jwt = builder.compact();
+
+
+
+
         return jwt;
     }
 
     public String createJWT(Authentication authentication) {
+        Oauth2Util oauth2Util = new Oauth2Util();
+        String refreshToken = oauth2Util.createRefreshToken(authentication);
+
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         return createJWT(userPrincipal.getId(), userPrincipal.getUsername(), userPrincipal.getRoles());
     }
