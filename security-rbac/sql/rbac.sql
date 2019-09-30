@@ -13,7 +13,7 @@ CREATE TABLE `sec_user`
   `no_lock`      tinyint(1)      NOT NULL DEFAULT 1 COMMENT '1 账号没有被锁定，0 账号被锁定',
   `app_id` int(11) NOT NULL COMMENT '应用id, 0 云平台, 1 ivt, 2 数字资产',
   `profile_id` bigint(64)  NOT NULL COMMENT '概要id',
-  `deleted` tinyint(1) NOT NULL DEFAULT 0 COMMENT "0 没有删除, 1 已经删除 ",
+  `deleted` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0 没有删除, 1 已经删除',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_user` varchar(11) NOT NULL DEFAULT '0' COMMENT '更新用户id',
@@ -67,7 +67,41 @@ CREATE TABLE `sec_role`
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_user` varchar(11) NOT NULL DEFAULT '0' COMMENT '更新用户id',
   `create_user` varchar(11) NOT NULL DEFAULT '0' COMMENT '创建用户id',
-  `deleted` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0 没有删除, 1 已经删除'
+  `deleted` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0 没有删除, 1 已经删除',
   PRIMARY KEY (`user_id`, `role_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8 COMMENT ='用户角色关系表';
+
+
+CREATE TABLE `sec_resource`
+(
+  `id`          bigint(64)  NOT NULL COMMENT '主键',
+  `name`    varchar(64) NOT NULL COMMENT '资源名称',
+  `url`        varchar(1000) DEFAULT NULL COMMENT 'url路径',
+  `type`       int(2)      NOT NULL COMMENT '权限类型，前端路由-1，前端按钮-2， 后端API-3',
+  `permission` varchar(64)   DEFAULT NULL COMMENT '权限表达式',
+  `method`     varchar(8)   DEFAULT NULL COMMENT 'http方法',
+  `app_id` int(11) NOT NULL COMMENT '应用id, 0 云平台, 1 ivt, 2 数字资产',
+  `deleted` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0 没有删除, 1 已经删除',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_user` varchar(11) NOT NULL DEFAULT '0' COMMENT '更新用户id',
+  `create_user` varchar(11) NOT NULL DEFAULT '0' COMMENT '创建用户id',
+  PRIMARY KEY (`id`)
+
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8 COMMENT ='资源表';
+
+
+CREATE TABLE `sec_role_resource`
+(
+  `role_id`          bigint(64)  NOT NULL COMMENT '角色id',
+  `resource_id`          bigint(64)  NOT NULL COMMENT '资源id',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_user` varchar(11) NOT NULL DEFAULT '0' COMMENT '更新用户id',
+  `create_user` varchar(11) NOT NULL DEFAULT '0' COMMENT '创建用户id',
+  `deleted` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0 没有删除, 1 已经删除',
+    PRIMARY KEY (`role_id`, `resource_id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8 COMMENT ='角色资源关系表';
