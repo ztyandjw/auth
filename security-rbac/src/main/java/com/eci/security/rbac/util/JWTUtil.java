@@ -1,5 +1,6 @@
 package com.eci.security.rbac.util;
 
+import com.eci.security.rbac.common.vo.Oauth2Token;
 import com.eci.security.rbac.common.vo.UserPrincipal;
 import com.eci.security.rbac.config.JWTConfig;
 
@@ -12,10 +13,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author T1m Zhang(49244143@qq.com) 2019/9/25.
@@ -40,35 +41,50 @@ public class JWTUtil {
      * @param roles  角色列表
      * @return
      */
-    protected String createJWT(Long id, String userName, List<String> roles) {
-        Date now = new Date();
+    protected Oauth2Token createAccessToken(Long id, String userName, List<String> roles) {
+        ZoneId myZone = ZoneId.of("Asia/Shanghai");
+        LocalDateTime now = LocalDateTime.now(myZone);
+        LocalDateTime expireAccessLocalDate = now.plusSeconds(6000);
+        LocalDateTime expireRefreshLocalDate = now.plusSeconds(12000);
+        Date expireAccess =  Date.from(expireAccessLocalDate.atZone(myZone).toInstant());
+        Date expireRefresh =  Date.from(expireRefreshLocalDate.atZone(myZone).toInstant());
+
+        String accessJti = UUID.randomUUID().toString();
+        String refreshJti = UUID.randomUUID().toString();
         JwtBuilder builder = Jwts.builder()
-                .setId(id.toString())
-                .setSubject(userName)
-                .setIssuedAt(now)
+                .setId(accessJti)
                 .signWith(SignatureAlgorithm.HS256, jwtConfig.getKey())
-                .claim("roles", roles);
-        builder.setExpiration(null);
-        LocalDateTime localDateTime = LocalDateTime.now().plusSeconds(600);
-        Date expireDate =  Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-        builder.setExpiration(expireDate);
-        String jwt = builder.compact();
+                .claim("roles", roles)
+                .claim("client_id", "testclient001")
+                .claim("user_name", userName);
+        builder.setExpiration(expireAccess);
+        String accessToken = builder.compact();
 
+        builder = Jwts.builder()
+                .setId(refreshJti)
+                .signWith(SignatureAlgorithm.HS256, jwtConfig.getKey())
+                .claim("roles", roles)
+                .claim("ati", accessJti)
+                .claim("client_id", "testclient001")
+                .claim("user_name", userName);
+        builder.setExpiration(expireRefresh);
+        String refreshToken = builder.compact();
+        Oauth2Token oauth2Token = new Oauth2Token();
+        oauth2Token.setAccessToken(accessToken);
+        oauth2Token.setRefreshToken(refreshToken);
+        oauth2Token.setJti(accessJti);
 
+        oauth2Token.setExpiration(expireAccessLocalDate);
 
+        return oauth2Token;
 
-        return jwt;
     }
 
-    public String createJWT(Authentication authentication) {
-        Oauth2Util oauth2Util = new Oauth2Util();
-        String refreshToken = oauth2Util.createRefreshToken(authentication);
-
+    public Oauth2Token createJWT(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        return createJWT(userPrincipal.getId(), userPrincipal.getUsername(), userPrincipal.getRoles());
+        Oauth2Token oauth2Token =  createAccessToken(userPrincipal.getId(), userPrincipal.getUsername(), userPrincipal.getRoles());
+        return oauth2Token;
     }
-
-
 
 
 }

@@ -26,4 +26,8 @@ public class JWTConfig {
      * 开启 记住我 之后 jwt 过期时间，默认值 604800000，7天
      */
     private Long remember = 604800000L;
+
+    private String clientId = "test001";
+
+
 }

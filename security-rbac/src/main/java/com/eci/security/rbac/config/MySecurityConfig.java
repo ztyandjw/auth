@@ -10,6 +10,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 /**
  * @author T1m Zhang(49244143@qq.com) 2019/9/19.
@@ -47,11 +51,23 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
         return new InitializeUserDetailsBeanManagerConfigurer(context);
     }
 
-    public static void main(String[] args) {
-        BCryptPasswordEncoder s = new BCryptPasswordEncoder();
-
-        System.out.println(s.encode("12345611"));
+    @Bean
+    public TokenStore jwtTokenStore() {
+        return new JwtTokenStore(jwtAccessTokenConverter());
     }
+
+    @Bean
+    public JwtAccessTokenConverter jwtAccessTokenConverter(){
+        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
+        converter.setSigningKey("test123");
+        return converter;
+    }
+
+//    public static void main(String[] args) {
+//        BCryptPasswordEncoder s = new BCryptPasswordEncoder();
+//
+//        System.out.println(s.encode("12345611"));
+//    }
 
 
 }
