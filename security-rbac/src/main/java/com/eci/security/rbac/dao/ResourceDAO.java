@@ -15,5 +15,5 @@ import java.util.List;
 @Repository
 public interface ResourceDAO {
 
-    List<ResourceDO> getResourceByRoleIdList(@Param("roleIdList") List<Long> roleIdList);
+    List<ResourceDO> getResourceByRoleIds(@Param("roleIds") List<Long> roleIdList);
 }

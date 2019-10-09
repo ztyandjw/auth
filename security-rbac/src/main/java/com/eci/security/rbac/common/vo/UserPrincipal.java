@@ -1,16 +1,17 @@
 package com.eci.security.rbac.common.vo;
 
+import com.eci.security.rbac.common.dataobject.ResourceDO;
 import com.eci.security.rbac.constant.Consts;
 import com.eci.security.rbac.common.dataobject.RoleDO;
 import com.eci.security.rbac.common.dataobject.UserDO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -63,27 +64,25 @@ public class UserPrincipal implements UserDetails {
      */
     private List<String> roles;
 
-//    /**
-//     * 用户权限列表
-//     */
-//    private Collection<? extends GrantedAuthority> authorities;
+    /**
+     * 用户权限列表
+     */
+    private Collection<? extends GrantedAuthority> authorities;
 
-    public static UserPrincipal createUser(UserDO user, List<RoleDO> roles) {
-        List<String> roleNames = roles.stream()
-                .map(RoleDO::getRoleName)
+    public static UserPrincipal createUser(UserDO user, List<RoleDO> roles, List<ResourceDO> resources) {
+        List<String> roleNames = roles.stream().map(RoleDO::getRoleName).collect(Collectors.toList());
+
+        List<GrantedAuthority> authorities = resources.stream()
+                .filter(resource -> StringUtils.isNotBlank(resource.getPermission()))
+                .map(resource -> new SimpleGrantedAuthority(resource.getPermission()))
                 .collect(Collectors.toList());
 
-//        List<GrantedAuthority> authorities = permissions.stream()
-//                .filter(permission -> StrUtil.isNotBlank(permission.getPermission()))
-//                .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
-//                .collect(Collectors.toList());
-
-        return new UserPrincipal(user.getId(), user.getUsername(), user.getPassword(), user.getEnable(), user.getNoExpired(), user.getCredentialNoExpired(), user.getNoLock(),  user.getCreateTime(), user.getUpdateTime(), roleNames);
+        return new UserPrincipal(user.getId(), user.getUsername(), user.getPassword(), user.getEnable(), user.getNoExpired(), user.getCredentialNoExpired(), user.getNoLock(),  user.getCreateTime(), user.getUpdateTime(), roleNames, authorities);
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Lists.newArrayList();
+        return authorities;
     }
 
     @Override

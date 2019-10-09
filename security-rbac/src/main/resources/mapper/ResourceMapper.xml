@@ -3,14 +3,19 @@
 <mapper namespace="com.eci.security.rbac.dao.ResourceDAO">
 
     <sql id="FIELDS">
-        id, role_name, app_id, sec_role.create_time, sec_role.update_time, sec_role.deleted, sec_role.update_user, sec_role.create_user
+        id, resource_name, url, type, permission, method, app_id, sec_resource.deleted, sec_resource.create_time, sec_resource.update_time, sec_resource.update_user, sec_resource.create_user
     </sql>
 
-    <select id="getRolesByUserid"  resultType="RoleDO">
+    <select id="getResourceByRoleIds"  resultType="ResourceDO">
         SELECT
         <include refid="FIELDS" />
-        FROM sec_role left
-        join sec_user_role on sec_role.id = sec_user_role.role_id where sec_user_role.user_id = #{userid};
+        FROM sec_resource left
+        join sec_role_resource on sec_resource.id = sec_role_resource.resource_id where
+        sec_role_resource.role_id IN
+        <foreach collection="roleIds" item="roleId" separator="," open="(" close=")">
+            #{roleId}
+        </foreach>
+        ;
     </select>
 
 

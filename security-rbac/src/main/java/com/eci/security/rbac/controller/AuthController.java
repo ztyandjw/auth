@@ -1,11 +1,13 @@
 package com.eci.security.rbac.controller;
 
 import com.eci.security.rbac.common.bo.AuthLoginBO;
+import com.eci.security.rbac.common.dataobject.ResourceDO;
 import com.eci.security.rbac.common.dataobject.RoleDO;
 import com.eci.security.rbac.common.dataobject.UserDO;
 import com.eci.security.rbac.common.vo.CommonResult;
 import com.eci.security.rbac.common.vo.Oauth2Token;
 import com.eci.security.rbac.core.UserNamePasswordAppidAuthenticationToken;
+import com.eci.security.rbac.dao.ResourceDAO;
 import com.eci.security.rbac.dao.RoleDAO;
 import com.eci.security.rbac.dao.UserDAO;
 import com.eci.security.rbac.service.UserServiceImpl;
@@ -29,6 +31,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -46,9 +49,7 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private RoleDAO roleDAO;
-
-
+    private ResourceDAO resourceDAO;
 
     @Autowired
     private JWTUtil jwtUtil;
@@ -60,7 +61,8 @@ public class AuthController {
 
     @GetMapping("/get")
     public String test() {
-        List<RoleDO> r = roleDAO.getRolesByUserid(1L);
+        List a = Arrays.asList("1");
+        List<ResourceDO> list = resourceDAO.getResourceByRoleIds(a);
         return "123";
 
     }
@@ -71,12 +73,10 @@ public class AuthController {
     @PostMapping("login")
     public CommonResult<Oauth2Token> login(@RequestBody @Validated AuthLoginBO authLoginBO) {
         Authentication authentication = authenticationManager.authenticate(new UserNamePasswordAppidAuthenticationToken(authLoginBO.getUsername(), authLoginBO.getPassword(), authLoginBO.getAppId()));
-
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Oauth2Token jwt = jwtUtil.createJWT(authentication);
         return CommonResult.success(jwt);
-    }
+}
 
 
 //    @Bean

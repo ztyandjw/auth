@@ -15,7 +15,7 @@ public class JWTConfig {
     /**
      * jwt 加密 key，默认值：testkey.
      */
-    private String key = "testkey";
+    private String key = "51vrAuthKey";
 
     /**
      * jwt 过期时间，默认值：600000，10分钟.

@@ -4,12 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 
 /**
  * @author T1m Zhang(49244143@qq.com) 2019/9/29.
@@ -39,26 +37,9 @@ public class Oauth2Token implements Serializable{
         ChronoUnit.SECONDS.between(now, expireIn) : 0;
     }
 
-//    protected void setExpiresIn(int delta) {
-//        setExpiration(new Date(System.currentTimeMillis() + delta));
-//    }
-//
-//
-//    public Date getExpiration() {
-//        return expiration;
-//    }
-
-    /**
-     * The instant the token expires.
-     *
-     * @param expiration The instant the token expires.
-     */
     public void setExpiration(LocalDateTime expiration) {
         this.expireIn = expiration;
 }
 
 
-    public static void main(String[] args) {
-        System.out.println(new Date(System.currentTimeMillis() + (60 * 1000L)));
-    }
 }

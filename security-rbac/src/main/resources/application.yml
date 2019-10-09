@@ -25,5 +25,8 @@ mybatis-plus:
       id-type: auto
   mapper-locations: classpath*:mapper/*.xml
   type-aliases-package: com.eci.security.rbac.common.dataobject
+server:
+  port: 16666
+
 
 
