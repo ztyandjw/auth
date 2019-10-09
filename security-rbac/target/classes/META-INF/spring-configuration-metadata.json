@@ -1,0 +1,39 @@
+{
+  "groups": [
+    {
+      "name": "jwt.config",
+      "type": "com.eci.security.rbac.config.JWTConfig",
+      "sourceType": "com.eci.security.rbac.config.JWTConfig"
+    }
+  ],
+  "properties": [
+    {
+      "name": "jwt.config.client-id",
+      "type": "java.lang.String",
+      "sourceType": "com.eci.security.rbac.config.JWTConfig",
+      "defaultValue": "test001"
+    },
+    {
+      "name": "jwt.config.key",
+      "type": "java.lang.String",
+      "description": "jwt 加密 key，默认值：testkey.",
+      "sourceType": "com.eci.security.rbac.config.JWTConfig",
+      "defaultValue": "testkey"
+    },
+    {
+      "name": "jwt.config.remember",
+      "type": "java.lang.Long",
+      "description": "开启 记住我 之后 jwt 过期时间，默认值 604800000，7天",
+      "sourceType": "com.eci.security.rbac.config.JWTConfig",
+      "defaultValue": 604800000
+    },
+    {
+      "name": "jwt.config.ttl",
+      "type": "java.lang.Long",
+      "description": "jwt 过期时间，默认值：600000，10分钟.",
+      "sourceType": "com.eci.security.rbac.config.JWTConfig",
+      "defaultValue": 600000
+    }
+  ],
+  "hints": []
+}
