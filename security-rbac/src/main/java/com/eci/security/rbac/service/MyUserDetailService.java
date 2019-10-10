@@ -35,7 +35,7 @@ public class MyUserDetailService implements UserDetailsService {
     @Autowired
     private ResourceDAO resourceDAO;
 
-    public UserDetails loadUserByUsernameAndAppId(String username, Integer appId) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsernameAndAppId(String username, Long appId) throws UsernameNotFoundException {
         UserDO user = userDAO.selectByNameAndAppid(username, appId);
         if(user == null) {
             throw new UsernameNotFoundException(String.format("用户名: %s, 密码: %s， 未找到用户", username, appId));

@@ -76,7 +76,7 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Oauth2Token jwt = jwtUtil.createJWT(authentication);
         return CommonResult.success(jwt);
-}
+    }
 
 
 //    @Bean

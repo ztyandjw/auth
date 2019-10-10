@@ -90,7 +90,7 @@ public class DaoAuthenticationProvider extends AbstractUserDetailsAuthentication
                                            UsernamePasswordAuthenticationToken authentication)
     throws AuthenticationException {
     UserNamePasswordAppidAuthenticationToken myAuthentication = (UserNamePasswordAppidAuthenticationToken)authentication;
-    Integer appId = myAuthentication.getAppId();
+    Long appId = myAuthentication.getAppId();
     prepareTimingAttackProtection();
     try {
       UserDetails loadedUser = this.getUserDetailsService().loadUserByUsernameAndAppId(username, appId);

@@ -27,7 +27,7 @@ CREATE TABLE `sec_user_social`(
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_user` varchar(11) DEFAULT 'admin' COMMENT '更新用户id',
   `create_user` varchar(11) DEFAULT 'admin' COMMENT '创建用户id',
-  PRIMARY KEY (`user_id`,`app_id`,`provider_type`, `open_id`) USING BTREE
+  PRIMARY KEY (`user_id`,`app_id`,`provider_type`) USING BTREE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8 COMMENT ='用户Social关系表';
 

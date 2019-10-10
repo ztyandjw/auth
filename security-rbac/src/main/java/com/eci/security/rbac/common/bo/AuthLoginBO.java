@@ -16,7 +16,7 @@ import javax.validation.constraints.*;
 public class AuthLoginBO {
 
     @NotNull(message = "应用id不能为空")
-    private Integer appId;
+    private Long appId;
     @NotBlank(message = "用户名不能为空")
     @Length(min = 3, message = "用户名不能小于3个字符")
     @Length(max = 10, message = "用户名不能超过10个字符")
@@ -26,4 +26,7 @@ public class AuthLoginBO {
     @Length(min = 3, message = "密码不能小于3个字符")
     @Length(max = 10, message = "密码不能超过10个字符")
     private String password;
+    @NotBlank(message = "providerType不能为空")
+    @Pattern(regexp = "local", message = "providerType必须为local|ldap")
+    private String providerType;
 }

@@ -8,13 +8,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 
 public class UserNamePasswordAppidAuthenticationToken extends UsernamePasswordAuthenticationToken {
 
-    private final Integer appId;
+    private final Long appId;
 
-    public Integer getAppId() {
+    public Long getAppId() {
       return appId;
     }
 
-    public UserNamePasswordAppidAuthenticationToken(Object principal, Object credentials, Integer appId) {
+    public UserNamePasswordAppidAuthenticationToken(Object principal, Object credentials, Long appId) {
         super(principal, credentials);
         this.appId = appId;
     }

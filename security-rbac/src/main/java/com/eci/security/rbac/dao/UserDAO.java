@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface UserDAO {
 
-    UserDO selectByNameAndAppid(@Param("username") String username, @Param("appid") Integer appid);
+    UserDO selectByNameAndAppid(@Param("username") String username, @Param("appid") Long appid);
 
 
 }
