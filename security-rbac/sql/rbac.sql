@@ -41,7 +41,6 @@ CREATE TABLE `sec_user`
   `no_expired`      tinyint(1)      NOT NULL DEFAULT 1 COMMENT '1 账号没有过期，0 账号已经过期',
   `credential_no_expired`      tinyint(1)      NOT NULL DEFAULT 1 COMMENT '1 密码没有过期，0 密码已经过期',
   `no_lock`      tinyint(1)      NOT NULL DEFAULT 1 COMMENT '1 账号没有被锁定，0 账号被锁定',
-  `app_id` int(11) NOT NULL COMMENT '应用id, 1 云平台, 2 数字资产',
   `en_name`    varchar(255)         DEFAULT NULL COMMENT '英文名称',
   `cn_name`    varchar(255)         DEFAULT NULL COMMENT '中文名称',
   `tel_phone`       varchar(11)          DEFAULT NULL COMMENT '手机',
@@ -80,6 +79,7 @@ CREATE TABLE `sec_user_role`
 (
   `user_id`          bigint(20)  NOT NULL  COMMENT '用户id',
   `role_id`          bigint(64)  NOT NULL COMMENT '用户id',
+  `app_id` int(11) NOT NULL COMMENT '应用id, 1 云平台, 2 数字资产',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_user` varchar(11) DEFAULT 'admin' COMMENT '更新用户id',
@@ -90,6 +90,7 @@ CREATE TABLE `sec_user_role`
 DEFAULT CHARSET = utf8 COMMENT ='用户角色关系表';
 
 DROP TABLE IF EXISTS `sec_resource`;
+
 CREATE TABLE `sec_resource`
 (
   `id`          bigint(20)  NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -104,7 +105,7 @@ CREATE TABLE `sec_resource`
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_user` varchar(11) DEFAULT 'admin' COMMENT '更新用户id',
   `create_user` varchar(11) DEFAULT 'admin' COMMENT '创建用户id',
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `ux_resourceName_appId` (`resource_name`, `app_id`) USING BTREE,
   UNIQUE KEY `ux_permission_appId` (`permission`, `app_id`) USING BTREE
 ) ENGINE = InnoDB
@@ -115,6 +116,7 @@ CREATE TABLE `sec_role_resource`
 (
   `role_id`          bigint(20)  NOT NULL  COMMENT '角色id',
   `resource_id`          bigint(20)  NOT NULL COMMENT '资源id',
+  `app_id` int(11) NOT NULL COMMENT '应用id, 1 云平台, 2 数字资产',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_user` varchar(11) DEFAULT 'admin' COMMENT '更新用户id',

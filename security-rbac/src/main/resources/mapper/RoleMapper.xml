@@ -3,14 +3,14 @@
 <mapper namespace="com.eci.security.rbac.dao.RoleDAO">
 
     <sql id="FIELDS">
-        id, role_name, app_id, sec_role.create_time, sec_role.update_time, sec_role.deleted, sec_role.update_user, sec_role.create_user
+        id, role_name, sec_role.app_id, sec_role.create_time, sec_role.update_time, sec_role.deleted, sec_role.update_user, sec_role.create_user
     </sql>
 
-    <select id="getRolesByUserid"  resultType="RoleDO">
+    <select id="getRolesByUseridAndAppid"  resultType="RoleDO">
         SELECT
         <include refid="FIELDS" />
         FROM sec_role left
-        join sec_user_role on sec_role.id = sec_user_role.role_id where sec_user_role.user_id = #{userid};
+        join sec_user_role on sec_role.id = sec_user_role.role_id where sec_user_role.user_id = #{userid} AND sec_role.app_id = #{appid};
     </select>
 
 

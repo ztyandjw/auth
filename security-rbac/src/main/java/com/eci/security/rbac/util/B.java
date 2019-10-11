@@ -6,10 +6,12 @@ package com.eci.security.rbac.util;
 
 public class B extends  A{
 
+    public B(String b) {
+        System.out.println("bbbbbbbbbbb");
+    }
 
     public static void main(String[] args) {
-        B b = new B();
-        System.out.println(b.getClass().isAssignableFrom(A.class));
+        B b = new B("123");
 
     }
 }

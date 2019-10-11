@@ -16,6 +16,9 @@ public class UserDO extends BaseDO{
     private Integer noExpired;
     private Integer credentialNoExpired;
     private Integer noLock;
-    private Integer appId;
-    private Long profileId;
+    private String enName;
+    private String cnName;
+    private String telPhone;
+    private String emailAddress;
+
 }

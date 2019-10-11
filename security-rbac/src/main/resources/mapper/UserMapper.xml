@@ -4,14 +4,14 @@
 
     <sql id="FIELDS">
         id, username, password, enable, no_expired,
-        credential_no_expired, no_lock, app_id, profile_id, create_time, update_time,deleted, update_user, create_user
+        credential_no_expired, no_lock, en_name, cn_name, tel_phone, email_address, create_time, update_time,deleted, update_user, create_user
     </sql>
 
-    <select id="selectByNameAndAppid"  resultType="UserDO">
+    <select id="selectByUsername"  resultType="UserDO">
         SELECT
         <include refid="FIELDS" />
         FROM sec_user
-        WHERE username = #{username} AND app_id = #{appid}
+        WHERE username = #{username}
         LIMIT 1
     </select>
 

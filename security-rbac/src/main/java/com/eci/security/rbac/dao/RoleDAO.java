@@ -13,6 +13,6 @@ import java.util.List;
 @Repository
 public interface RoleDAO {
 
-    List<RoleDO> getRolesByUserid(@Param("userid") Long userid);
+    List<RoleDO> getRolesByUseridAndAppid(@Param("userid") Long userid, @Param("appid") Long appid);
 
 }

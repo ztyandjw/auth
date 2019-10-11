@@ -1,4 +1,4 @@
-package com.eci.security.rbac.service;
+package com.eci.security.rbac.core.provider;
 
 import com.eci.security.rbac.common.dataobject.ResourceDO;
 import com.eci.security.rbac.common.dataobject.RoleDO;
@@ -7,6 +7,7 @@ import com.eci.security.rbac.common.vo.UserPrincipal;
 import com.eci.security.rbac.dao.ResourceDAO;
 import com.eci.security.rbac.dao.RoleDAO;
 import com.eci.security.rbac.dao.UserDAO;
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,10 +22,9 @@ import java.util.stream.Collectors;
 
 
 @Configuration
-public class MyUserDetailService implements UserDetailsService {
+public class LocalUserDetailService implements UserDetailsService {
 
-//    @Autowired
-//    private PasswordEncoder passwordEncoder;
+
 
     @Autowired
     private UserDAO userDAO;
@@ -36,12 +36,15 @@ public class MyUserDetailService implements UserDetailsService {
     private ResourceDAO resourceDAO;
 
     public UserDetails loadUserByUsernameAndAppId(String username, Long appId) throws UsernameNotFoundException {
-        UserDO user = userDAO.selectByNameAndAppid(username, appId);
+        UserDO user = userDAO.selectByUsername(username);
         if(user == null) {
-            throw new UsernameNotFoundException(String.format("用户名: %s, 密码: %s， 未找到用户", username, appId));
+            throw new UsernameNotFoundException(String.format("用户名: %s， 未找到用户", username));
         }
-        List<RoleDO> roles = roleDAO.getRolesByUserid(user.getId());
-        List<ResourceDO> resources =  resourceDAO.getResourceByRoleIds(roles.stream().map(RoleDO :: getId).collect(Collectors.toList()));
+        List<RoleDO> roles = roleDAO.getRolesByUseridAndAppid(user.getId(), appId);
+        List<ResourceDO> resources = Lists.newArrayList();
+        if(roles.size() > 0) {
+            resources =  resourceDAO.getResourceByRoleIds(roles.stream().map(RoleDO :: getId).collect(Collectors.toList()));
+        }
         return UserPrincipal.createUser(user, roles, resources);
 
     }

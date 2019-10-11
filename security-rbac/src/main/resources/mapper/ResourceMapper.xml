@@ -3,7 +3,7 @@
 <mapper namespace="com.eci.security.rbac.dao.ResourceDAO">
 
     <sql id="FIELDS">
-        id, resource_name, url, type, permission, method, app_id, sec_resource.deleted, sec_resource.create_time, sec_resource.update_time, sec_resource.update_user, sec_resource.create_user
+        id, resource_name, url, type, permission, method, sec_resource.app_id, sec_resource.deleted, sec_resource.create_time, sec_resource.update_time, sec_resource.update_user, sec_resource.create_user
     </sql>
 
     <select id="getResourceByRoleIds"  resultType="ResourceDO">

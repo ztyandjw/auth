@@ -1,7 +1,9 @@
 package com.eci.security.rbac.config;
 
-import com.eci.security.rbac.core.InitializeUserDetailsBeanManagerConfigurer;
-import org.springframework.context.ApplicationContext;
+
+import com.eci.security.rbac.core.provider.LocalAuthenticationProvider;
+import com.eci.security.rbac.core.provider.LocalUserDetailService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,7 +12,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
@@ -21,6 +22,10 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 @Configuration
 @EnableWebSecurity
 public class MySecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private LocalUserDetailService myUserDetailService;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().authorizeRequests().antMatchers("/login*").permitAll();
@@ -46,10 +51,24 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
+//    @Bean
+//    public InitializeUserDetailsBeanManagerConfigurer initializeUserDetailsBeanManagerConfigurer(ApplicationContext context) {
+//        return new InitializeUserDetailsBeanManagerConfigurer(context);
+//    }
+
+    /**
+     * 本地账号名密码验证provider
+     */
     @Bean
-    public InitializeUserDetailsBeanManagerConfigurer initializeUserDetailsBeanManagerConfigurer(ApplicationContext context) {
-        return new InitializeUserDetailsBeanManagerConfigurer(context);
+    public LocalAuthenticationProvider localAuthenticationProvider() {
+        LocalAuthenticationProvider localAuthenticationProvider = new LocalAuthenticationProvider();
+        localAuthenticationProvider.setMyUserDetailService(myUserDetailService);
+        localAuthenticationProvider.setPasswordEncoder(this.encoder());
+        return localAuthenticationProvider;
     }
+
+
+
 
     @Bean
     public TokenStore jwtTokenStore() {
@@ -63,11 +82,11 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
         return converter;
     }
 
-//    public static void main(String[] args) {
-//        BCryptPasswordEncoder s = new BCryptPasswordEncoder();
-//
-//        System.out.println(s.encode("12345611"));
-//    }
+    public static void main(String[] args) {
+        BCryptPasswordEncoder s = new BCryptPasswordEncoder();
+
+        System.out.println(s.encode("12345611"));
+    }
 
 
 }

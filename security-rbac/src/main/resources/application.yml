@@ -48,5 +48,7 @@ mybatis-plus:
 server:
   port: 16666
 
-
+logging:
+  level:
+    com.eci.security.rbac.dao: debug
 

@@ -13,5 +13,5 @@ public class RoleDO extends BaseDO {
 
     private Long id;
     private String roleName;
-    private Integer appId;
+    private Long appId;
 }

@@ -47,8 +47,13 @@ public class UserPrincipal implements UserDetails {
 
     private Integer noLock;
 
+    private String cnName;
 
+    private String enName;
 
+    private String phoneNumber;
+
+    private String emailAddress;
     /**
      * 创建时间
      */
@@ -71,13 +76,12 @@ public class UserPrincipal implements UserDetails {
 
     public static UserPrincipal createUser(UserDO user, List<RoleDO> roles, List<ResourceDO> resources) {
         List<String> roleNames = roles.stream().map(RoleDO::getRoleName).collect(Collectors.toList());
-
         List<GrantedAuthority> authorities = resources.stream()
                 .filter(resource -> StringUtils.isNotBlank(resource.getPermission()))
                 .map(resource -> new SimpleGrantedAuthority(resource.getPermission()))
                 .collect(Collectors.toList());
-
-        return new UserPrincipal(user.getId(), user.getUsername(), user.getPassword(), user.getEnable(), user.getNoExpired(), user.getCredentialNoExpired(), user.getNoLock(),  user.getCreateTime(), user.getUpdateTime(), roleNames, authorities);
+        return new UserPrincipal(user.getId(), user.getUsername(), user.getPassword(), user.getEnable(), user.getNoExpired(), user.getCredentialNoExpired(), user.getNoLock(), user.getCnName()
+                ,user.getEnName(), user.getTelPhone(), user.getEmailAddress(), user.getCreateTime(), user.getUpdateTime(), roleNames, authorities);
     }
 
     @Override

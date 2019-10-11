@@ -5,4 +5,7 @@ package com.eci.security.rbac.util;
  */
 
 public class A {
+    public A() {
+        System.out.println("AAAAAAA");
+    }
 }
