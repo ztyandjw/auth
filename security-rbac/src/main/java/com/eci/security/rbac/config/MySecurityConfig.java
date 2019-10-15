@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
@@ -67,20 +68,26 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
         return localAuthenticationProvider;
     }
 
-
-
-
     @Bean
     public TokenStore jwtTokenStore() {
+
         return new JwtTokenStore(jwtAccessTokenConverter());
     }
+
+
+
+
 
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter(){
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
         converter.setSigningKey("test123");
+        converter.setVerifierKey("test123");
+//        converter.setVerifierKey("test123");
         return converter;
     }
+
+
 
     public static void main(String[] args) {
         BCryptPasswordEncoder s = new BCryptPasswordEncoder();

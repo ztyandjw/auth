@@ -10,6 +10,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
+
 /**
  * @author T1m Zhang(49244143@qq.com) 2019/10/10.
  */
@@ -23,7 +25,7 @@ public class AuthenticationServiceImpl {
     @Autowired
     private JWTUtil jwtUtil;
 
-    public Oauth2Token login(String username, String password, String providerType, Long appId) {
+    public Oauth2Token login(String username, String password, String providerType, Long appId) throws UnsupportedEncodingException {
         Authentication authentication = null;
         if(ProviderTypeEnum.equals(providerType, ProviderTypeEnum.LOCAL)) {
             authentication = new LocalUserNamePasswordAuthenticationToken(username, password, appId);

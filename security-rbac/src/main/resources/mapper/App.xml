@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eci.security.rbac.dao.AppDAO">
+
+    <sql id="FIELDS">
+        id, app_name, create_time, update_time,deleted, update_user, create_user
+    </sql>
+
+    <select id="selectByAppid"  resultType="AppDO">
+        SELECT
+        <include refid="FIELDS" />
+        FROM sec_app
+        WHERE app_id = #{appid}
+        LIMIT 1
+    </select>
+
+
+</mapper>
