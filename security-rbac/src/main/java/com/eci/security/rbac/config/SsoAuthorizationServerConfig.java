@@ -30,6 +30,8 @@ public class SsoAuthorizationServerConfig extends AuthorizationServerConfigurerA
 				.authorizedGrantTypes("authorization_code", "refresh_token")
 				.scopes("all");
 	}
+
+
 	
 //	@Override
 //	public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {

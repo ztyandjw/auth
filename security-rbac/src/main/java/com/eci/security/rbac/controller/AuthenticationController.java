@@ -42,11 +42,9 @@ public class AuthenticationController {
 
 
     @PostMapping("refreshToken")
-    public String refreshToken(@RequestBody @Validated AuthRefreshTokenBO authRefreshTokenBO) {
+    public CommonResult<Oauth2Token> refreshToken(@RequestBody @Validated AuthRefreshTokenBO authRefreshTokenBO) throws UnsupportedEncodingException {
         String refreshToken = authRefreshTokenBO.getRefreshToken();
-        jwtUtil.getRefreshToken(refreshToken);
-        return "helloworld";
-//        Oauth2Token token = authenticationService.login(username, password, providerType, appId);
-//        return CommonResult.success(token);
+        Oauth2Token token = jwtUtil.createRefreshToken(refreshToken);
+        return CommonResult.success(token);
     }
 }

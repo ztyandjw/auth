@@ -16,14 +16,18 @@ import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper
 import org.springframework.security.core.userdetails.*;
 import org.springframework.security.core.userdetails.cache.NullUserCache;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
  * @author T1m Zhang(49244143@qq.com) 2019/10/10.
  */
 
+
+
 public class LocalAuthenticationProvider implements
         AuthenticationProvider, InitializingBean, MessageSourceAware {
+
 
     protected final Log logger = LogFactory.getLog(getClass());
     protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();

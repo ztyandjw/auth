@@ -31,11 +31,6 @@ public class AuthenticationServiceImpl {
             authentication = new LocalUserNamePasswordAuthenticationToken(username, password, appId);
         }
         authentication = authenticationManager.authenticate(authentication);
-        return jwtUtil.createJWT(authentication);
+        return jwtUtil.createAccessToken(authentication);
     }
-
-
-
-
-
 }

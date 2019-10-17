@@ -1,8 +1,10 @@
 package com.eci.security.rbac.config;
 
 
+import com.eci.security.rbac.util.JwtAccessTokenConverter;
 import com.eci.security.rbac.core.provider.LocalAuthenticationProvider;
 import com.eci.security.rbac.core.provider.LocalUserDetailService;
+import com.eci.security.rbac.util.JwtTokenStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,10 +14,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import sun.misc.BASE64Encoder;
 
 /**
  * @author T1m Zhang(49244143@qq.com) 2019/9/19.
@@ -23,6 +24,9 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 @Configuration
 @EnableWebSecurity
 public class MySecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private  JWTConfig jwtConfig;
 
     @Autowired
     private LocalUserDetailService myUserDetailService;
@@ -37,7 +41,30 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 //                .authenticated(); // 都需要认证
     }
 
+//    @Bean
+//    public PreAuthenticatedAuthenticationProvider preAuthenticatedAuthenticationProvider() {
+//
+//        PreAuthenticatedAuthenticationProvider preAuthenticatedAuthenticationProvider = new PreAuthenticatedAuthenticationProvider();
+//        preAuthenticatedAuthenticationProvider.setPreAuthenticatedUserDetailsService(myUserDetailService);
+//        return preAuthenticatedAuthenticationProvider;
+//
+//    }
 
+//    @Bean
+//    @Order(Integer.MIN_VALUE + 1)
+//    public FuckLocalAuthenticationProvider fuckLocalAuthenticationProvider() {
+//        FuckLocalAuthenticationProvider f = new FuckLocalAuthenticationProvider();
+//
+//        return f;
+//    }
+
+    @Bean
+    public LocalAuthenticationProvider localAuthenticationProvider() {
+        LocalAuthenticationProvider localAuthenticationProvider = new LocalAuthenticationProvider();
+        localAuthenticationProvider.setMyUserDetailService(myUserDetailService);
+        localAuthenticationProvider.setPasswordEncoder(this.encoder());
+        return localAuthenticationProvider;
+    }
 
     @Override
     @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
@@ -45,11 +72,12 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-
     @Bean
     public BCryptPasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
     }
+
+
 
 
 //    @Bean
@@ -60,16 +88,12 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * 本地账号名密码验证provider
      */
-    @Bean
-    public LocalAuthenticationProvider localAuthenticationProvider() {
-        LocalAuthenticationProvider localAuthenticationProvider = new LocalAuthenticationProvider();
-        localAuthenticationProvider.setMyUserDetailService(myUserDetailService);
-        localAuthenticationProvider.setPasswordEncoder(this.encoder());
-        return localAuthenticationProvider;
-    }
+
+
+
 
     @Bean
-    public TokenStore jwtTokenStore() {
+    public JwtTokenStore jwtTokenStore() {
 
         return new JwtTokenStore(jwtAccessTokenConverter());
     }
@@ -81,10 +105,14 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter(){
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setSigningKey("test123");
-        converter.setVerifierKey("test123");
-//        converter.setVerifierKey("test123");
+        converter.setSigningKey(jwtConfig.getSignAndVerifyKey());
+        converter.setVerifierKey(jwtConfig.getSignAndVerifyKey());
         return converter;
+    }
+
+    @Bean
+    public BASE64Encoder base64Encoder() {
+        return new BASE64Encoder();
     }
 
 

@@ -13,9 +13,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 public class JWTConfig {
     /**
-     * jwt 加密 key，默认值：testkey.
+     * jwt 加密解密 key，默认值：test123.
      */
-    private String key = "test123";
+    private String signAndVerifyKey = "test123";
+
+
 
     /**
      * jwt 过期时间，默认值：600000，10分钟.
@@ -28,6 +30,10 @@ public class JWTConfig {
     private Long remember = 604800000L;
 
     private String clientId = "test001";
+
+    private Long accessTokenExpireSeconds = 6L;
+
+    private Long refreshTokenExpireSeconds = 3000L;
 
 
 }
