@@ -39,6 +39,8 @@ public class UserPrincipal implements UserDetails {
     @JsonIgnore
     private String password;
 
+    private String appName;
+
     private Integer enabled;
 
     private Integer noExpired;
@@ -74,13 +76,13 @@ public class UserPrincipal implements UserDetails {
      */
     private Collection<? extends GrantedAuthority> authorities;
 
-    public static UserPrincipal createUser(UserDO user, List<RoleDO> roles, List<ResourceDO> resources) {
+    public static UserPrincipal createUser(UserDO user, List<RoleDO> roles, List<ResourceDO> resources, String appName) {
         List<String> roleNames = roles.stream().map(RoleDO::getRoleName).collect(Collectors.toList());
         List<GrantedAuthority> authorities = resources.stream()
                 .filter(resource -> StringUtils.isNotBlank(resource.getPermission()))
                 .map(resource -> new SimpleGrantedAuthority(resource.getPermission()))
                 .collect(Collectors.toList());
-        return new UserPrincipal(user.getId(), user.getUsername(), user.getPassword(), user.getEnable(), user.getNoExpired(), user.getCredentialNoExpired(), user.getNoLock(), user.getCnName()
+        return new UserPrincipal(user.getId(), user.getUsername(), user.getPassword(), appName, user.getEnable(), user.getNoExpired(), user.getCredentialNoExpired(), user.getNoLock(), user.getCnName()
                 ,user.getEnName(), user.getTelPhone(), user.getEmailAddress(), user.getCreateTime(), user.getUpdateTime(), roleNames, authorities);
     }
 

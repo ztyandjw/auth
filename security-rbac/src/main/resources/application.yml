@@ -49,6 +49,7 @@ spring:
     name: security-rbac
 
 
+
 #mybatis:
 #  config-location: classpath:mybatis-config.xml
 #  mapper-locations: classpath:mapper/*.xml
@@ -68,4 +69,16 @@ server:
 logging:
   level:
     com.eci.security.rbac.dao: debug
+
+
+
+apollo:
+
+  meta: http://10.100.100.20:18080
+#  bootstrap:
+#    enable: true
+
+app:
+  id: aaa
+
 

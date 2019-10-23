@@ -10,7 +10,7 @@
         SELECT
         <include refid="FIELDS" />
         FROM sec_app
-        WHERE app_id = #{appid}
+        WHERE id = #{appid}
         LIMIT 1
     </select>
 

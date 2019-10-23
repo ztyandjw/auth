@@ -273,7 +273,7 @@ public class JwtAccessTokenConverter implements TokenEnhancer, AccessTokenConver
 		return token;
 	}
 
-	protected Map<String, Object> decode(String token) {
+	public Map<String, Object> decode(String token) {
 		try {
 			Jwt jwt = JwtHelper.decodeAndVerify(token, verifier);
 			String claimsStr = jwt.getClaims();

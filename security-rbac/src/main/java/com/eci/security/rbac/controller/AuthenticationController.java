@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -31,7 +32,7 @@ public class AuthenticationController {
     private JWTUtil jwtUtil;
 
     @PostMapping("login")
-    public CommonResult<Oauth2Token> login(@RequestBody @Validated AuthLoginBO authLoginBO) throws UnsupportedEncodingException {
+    public CommonResult<Oauth2Token> login(@RequestBody @Validated AuthLoginBO authLoginBO) throws IOException {
         String username = authLoginBO.getUsername();
         String password = authLoginBO.getPassword();
         String providerType = authLoginBO.getProviderType();
@@ -42,9 +43,9 @@ public class AuthenticationController {
 
 
     @PostMapping("refreshToken")
-    public CommonResult<Oauth2Token> refreshToken(@RequestBody @Validated AuthRefreshTokenBO authRefreshTokenBO) throws UnsupportedEncodingException {
+    public CommonResult<Oauth2Token> refreshToken(@RequestBody @Validated AuthRefreshTokenBO authRefreshTokenBO) throws IOException {
         String refreshToken = authRefreshTokenBO.getRefreshToken();
-        Oauth2Token token = jwtUtil.createRefreshToken(refreshToken);
+        Oauth2Token token = authenticationService.createRefreshToken(refreshToken);
         return CommonResult.success(token);
     }
 }

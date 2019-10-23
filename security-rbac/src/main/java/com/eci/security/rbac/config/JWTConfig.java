@@ -29,11 +29,12 @@ public class JWTConfig {
      */
     private Long remember = 604800000L;
 
-    private String clientId = "test001";
-
-    private Long accessTokenExpireSeconds = 6L;
+    private Long accessTokenExpireSeconds = 600L;
 
     private Long refreshTokenExpireSeconds = 3000L;
+
+    private String redisJwtPrefix = "security:jwt:";
+
 
 
 }

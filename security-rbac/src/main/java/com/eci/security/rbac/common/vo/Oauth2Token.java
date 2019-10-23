@@ -16,7 +16,7 @@ import java.time.temporal.ChronoUnit;
 
 @Data
 @Accessors(chain = true)
-public class Oauth2Token implements Serializable{
+public class Oauth2Token implements Serializable {
     private static final long serialVersionUID = 1L;
     @JsonProperty("access_token")
     private String accessToken;
@@ -24,22 +24,10 @@ public class Oauth2Token implements Serializable{
     private String tokenType = "bearer";
     @JsonProperty("refresh_token")
     private String refreshToken;
-    @JsonIgnore
-    private LocalDateTime expireIn;
+    @JsonProperty("expires_in")
+    private Long expireIn;
     private String scope = "all";
     private String jti;
-
-    @JsonProperty("expires_in")
-    public Long getExpiresIn() {
-        ZoneId myZone = ZoneId.of("Asia/Shanghai");
-        LocalDateTime now = LocalDateTime.now(myZone);
-        return expireIn != null ?
-        ChronoUnit.SECONDS.between(now, expireIn) : 0;
-    }
-
-    public void setExpiration(LocalDateTime expiration) {
-        this.expireIn = expiration;
 }
 
 
-}
