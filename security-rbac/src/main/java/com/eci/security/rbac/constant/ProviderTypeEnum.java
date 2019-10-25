@@ -11,8 +11,8 @@ public enum ProviderTypeEnum {
     LOCAL(1, "LOCAL"),
     AD(2, "ad"),
     OA(3, "OA"),
-    WEBCHAT(3, "WEBCHAT"),
-    QQ(3, "QQ"),
+    WEBCHAT(5, "WEBCHAT"),
+    QQ(6, "QQ"),
     ;
 
     /**

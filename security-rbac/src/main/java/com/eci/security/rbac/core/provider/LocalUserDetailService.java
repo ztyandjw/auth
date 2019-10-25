@@ -28,9 +28,7 @@ import java.util.stream.Collectors;
 
 @Configuration
 public class LocalUserDetailService implements UserDetailsService {
-
-
-
+    
     @Autowired
     private UserDAO userDAO;
 
@@ -40,23 +38,17 @@ public class LocalUserDetailService implements UserDetailsService {
     @Autowired
     private ResourceDAO resourceDAO;
 
-    @Autowired
-    private AppDAO appDAO;
-
-
     public UserDetails loadUserByUsernameAndAppId(String username, Long appId) throws UsernameNotFoundException {
         UserDO user = userDAO.selectByUsername(username);
         if(user == null) {
             throw new UsernameNotFoundException(String.format("用户名: %s， 未找到用户", username));
         }
-        AppDO appDO = appDAO.selectByAppid(appId);
-        String appName = appDO.getAppName();
         List<RoleDO> roles = roleDAO.getRolesByUseridAndAppid(user.getId(), appId);
         List<ResourceDO> resources = Lists.newArrayList();
         if(roles.size() > 0) {
             resources =  resourceDAO.getResourceByRoleIds(roles.stream().map(RoleDO :: getId).collect(Collectors.toList()));
         }
-        return UserPrincipal.createUser(user, roles, resources, appName);
+        return UserPrincipal.createUser(user, roles, resources, appId);
     }
 
     @Override

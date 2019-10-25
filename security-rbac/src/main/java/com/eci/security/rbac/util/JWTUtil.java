@@ -4,6 +4,7 @@ import com.eci.security.rbac.common.vo.Oauth2Token;
 import com.eci.security.rbac.common.vo.UserPrincipal;
 import com.eci.security.rbac.config.JWTConfig;
 
+import com.eci.security.rbac.constant.ErrorCoceEnum;
 import com.eci.security.rbac.dao.AppDAO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
@@ -59,25 +60,21 @@ public class JWTUtil {
     @Autowired
     private JWTConfig jwtConfig;
 
-    @Autowired
-    private BASE64Encoder base64Encoder;
+    private  static final BASE64Encoder base64Encoder = new BASE64Encoder();
 
 
-
-
-
-
-
-
-
-    protected String getBase64EncodedSecretKey(String key) throws UnsupportedEncodingException {
-        byte[] b = key.getBytes("UTF-8");
-        return base64Encoder.encode(b);
+    private String getBase64EncodedSecretKey(String key) throws UnsupportedEncodingException {
+        byte[] bytes;
+        try {
+            bytes = key.getBytes("UTF-8");
+            return base64Encoder.encode(bytes);
+        } catch (UnsupportedEncodingException e) {
+            log.error("{} 无法进行base64编码", key);
+            throw e;
+        }
     }
 
-
-    public String createAccessTokenValue(String userName, List<String> roles, List<String> authorities, String appName) throws IOException {
-
+    public String createAccessTokenValue(String userName, List<String> roles, List<String> authorities, Long appId) throws UnsupportedEncodingException {
         String base64EncodedSecretKey = this.getBase64EncodedSecretKey(jwtConfig.getSignAndVerifyKey());
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
         ZoneId myZone = ZoneId.of("Asia/Shanghai");
@@ -90,7 +87,7 @@ public class JWTUtil {
                 .setHeaderParam("typ", "JWT")
                 .signWith(signatureAlgorithm, base64EncodedSecretKey)
                 .claim("roles", roles)
-                .claim("client_id", appName)
+                .claim("client_id", appId)
                 .claim("user_name", userName)
                 .claim("authorities", authorities);
         builder.setExpiration(expireAccess);
@@ -99,9 +96,13 @@ public class JWTUtil {
     }
 
 
-    protected Oauth2Token createAccessAndRefreshToken(String userName, List<String> roles, List<String> authorities, String appName) throws IOException {
-
-        String base64EncodedSecretKey = this.getBase64EncodedSecretKey(jwtConfig.getSignAndVerifyKey());
+    public Oauth2Token createAccessAndRefreshOauth2Token(Authentication authentication) throws UnsupportedEncodingException {
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        List<String> roles = userPrincipal.getRoles();
+        String username = userPrincipal.getUsername();
+        Long appId = userPrincipal.getAppId();
+        List<String> authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+        String base64EncodedSecretKey = getBase64EncodedSecretKey(jwtConfig.getSignAndVerifyKey());
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
         ZoneId myZone = ZoneId.of("Asia/Shanghai");
         LocalDateTime now = LocalDateTime.now(myZone);
@@ -116,20 +117,19 @@ public class JWTUtil {
                 .setHeaderParam("typ", "JWT")
                 .signWith(signatureAlgorithm, base64EncodedSecretKey)
                 .claim("roles", roles)
-                .claim("client_id", appName)
-                .claim("user_name", userName)
+                .claim("client_id", appId)
+                .claim("user_name", username)
                 .claim("authorities", authorities);
         builder.setExpiration(expireAccess);
         String accessToken = builder.compact();
-
         builder = Jwts.builder()
                 .setId(refreshJti)
                 .setHeaderParam("typ", "JWT")
                 .signWith(signatureAlgorithm, base64EncodedSecretKey)
                 .claim("roles", roles)
                 .claim("ati", accessJti)
-                .claim("client_id", appName)
-                .claim("user_name", userName)
+                .claim("client_id", appId)
+                .claim("user_name", username)
                 .claim("scope", Arrays.asList("all"))
                 .claim("authorities", authorities);
         builder.setExpiration(expireRefresh);
@@ -143,15 +143,8 @@ public class JWTUtil {
         return oauth2Token;
     }
 
-    public Oauth2Token createAccessToken(Authentication authentication) throws IOException {
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        List<String> authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-        Oauth2Token oauth2Token =  createAccessAndRefreshToken(userPrincipal.getUsername(), userPrincipal.getRoles(), authorities, userPrincipal.getAppName());
-        return oauth2Token;
-    }
-
     //验证refresh token是否过期
-    protected boolean isExpired(OAuth2RefreshToken refreshToken) {
+    private boolean isExpired(OAuth2RefreshToken refreshToken) {
         if (refreshToken instanceof ExpiringOAuth2RefreshToken) {
             ExpiringOAuth2RefreshToken expiringToken = (ExpiringOAuth2RefreshToken) refreshToken;
             return expiringToken.getExpiration() == null

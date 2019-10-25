@@ -23,7 +23,7 @@ import sun.misc.BASE64Encoder;
  */
 @Configuration
 @EnableWebSecurity
-public class MySecurityConfig extends WebSecurityConfigurerAdapter {
+public class MySecurityCongiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private  JWTConfig jwtConfig;
@@ -34,29 +34,7 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().authorizeRequests().antMatchers("/login*").permitAll();
-//        http.formLogin() // 表单方式
-//                .and()
-//                .authorizeRequests() // 授权配置
-//                .anyRequest()  // 所有请求
-//                .authenticated(); // 都需要认证
     }
-
-//    @Bean
-//    public PreAuthenticatedAuthenticationProvider preAuthenticatedAuthenticationProvider() {
-//
-//        PreAuthenticatedAuthenticationProvider preAuthenticatedAuthenticationProvider = new PreAuthenticatedAuthenticationProvider();
-//        preAuthenticatedAuthenticationProvider.setPreAuthenticatedUserDetailsService(myUserDetailService);
-//        return preAuthenticatedAuthenticationProvider;
-//
-//    }
-
-//    @Bean
-//    @Order(Integer.MIN_VALUE + 1)
-//    public FuckLocalAuthenticationProvider fuckLocalAuthenticationProvider() {
-//        FuckLocalAuthenticationProvider f = new FuckLocalAuthenticationProvider();
-//
-//        return f;
-//    }
 
     @Bean
     public LocalAuthenticationProvider localAuthenticationProvider() {
@@ -76,20 +54,6 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
     public BCryptPasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
     }
-
-
-
-
-//    @Bean
-//    public InitializeUserDetailsBeanManagerConfigurer initializeUserDetailsBeanManagerConfigurer(ApplicationContext context) {
-//        return new InitializeUserDetailsBeanManagerConfigurer(context);
-//    }
-
-    /**
-     * 本地账号名密码验证provider
-     */
-
-
 
 
     @Bean

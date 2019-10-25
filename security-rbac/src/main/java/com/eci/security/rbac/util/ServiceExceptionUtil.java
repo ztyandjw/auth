@@ -36,6 +36,10 @@ public class ServiceExceptionUtil {
         return CommonResult.error(code, message);
     }
 
+    public static ServiceException exception(Integer code, Throwable e) {
+        return new ServiceException(code, messages.get(code), e);
+    }
+
 
     public static ServiceException exception(Integer code) {
         return new ServiceException(code, messages.get(code));
