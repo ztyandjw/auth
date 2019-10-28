@@ -4,7 +4,6 @@ import com.eci.security.rbac.common.bo.AuthLoginBO;
 import com.eci.security.rbac.common.bo.AuthRefreshTokenBO;
 import com.eci.security.rbac.common.vo.CommonResult;
 import com.eci.security.rbac.common.vo.Oauth2Token;
-import com.eci.security.rbac.exception.DAOException;
 import com.eci.security.rbac.service.AuthenticationServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

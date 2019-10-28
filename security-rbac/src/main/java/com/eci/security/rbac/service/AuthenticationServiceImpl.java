@@ -4,15 +4,14 @@ import com.eci.security.rbac.common.vo.Oauth2Token;
 import com.eci.security.rbac.config.JWTConfig;
 import com.eci.security.rbac.constant.ErrorCoceEnum;
 import com.eci.security.rbac.constant.ProviderTypeEnum;
+import com.eci.security.rbac.core.provider.MyAuthenticationManager;
 import com.eci.security.rbac.core.token.LocalUserNamePasswordAuthenticationToken;
 import com.eci.security.rbac.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.RedisSystemException;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.ExpiringOAuth2RefreshToken;
@@ -21,11 +20,11 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author T1m Zhang(49244143@qq.com) 2019/10/10.
@@ -36,7 +35,7 @@ import java.util.Map;
 public class AuthenticationServiceImpl {
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    private MyAuthenticationManager MyProviderManager;
     @Autowired
     private JWTUtil jwtUtil;
     @Autowired
@@ -59,7 +58,7 @@ public class AuthenticationServiceImpl {
         Oauth2Token oauth2Token = null;
         String oldToken = null;
         try {
-            authentication = authenticationManager.authenticate(authentication);
+            authentication = MyProviderManager.authenticate(authentication);
             oldToken = stringRedisTemplate.opsForValue().get(redisKey);
             //redis不存在，说明没有用户登录，或者早已过期
             if (StringUtils.isBlank(oldToken)) {
@@ -68,14 +67,28 @@ public class AuthenticationServiceImpl {
                 if(null == oauth2TokenValue) {
                     throw ServiceExceptionUtil.exception(ErrorCoceEnum.SERVICE_INTERNAL_ERROR.getCode());
                 }
-                stringRedisTemplate.opsForValue().set(redisKey, oauth2TokenValue);
+                stringRedisTemplate.opsForValue().set(redisKey, oauth2TokenValue, jwtConfig.getRefreshTokenExpireSeconds(), TimeUnit.SECONDS);
                 return oauth2Token;
             }
-            //存在token，不考虑是否过期，直接将redis中的token返回
             oauth2Token = JsonUtil.jsonToObject(oldToken, Oauth2Token.class);
             if(null == oauth2Token) {
                 throw ServiceExceptionUtil.exception(ErrorCoceEnum.SERVICE_INTERNAL_ERROR.getCode());
             }
+
+            String accessTokenValue = oauth2Token.getAccessToken();
+            Map<String, Object>params = jwtTokenEnhancer.decode(accessTokenValue);
+            Long expiredTimestamp = (Long)params.get("exp") * 1000;
+            boolean accessTokenExpired = jwtUtil.isExpired(accessTokenValue);
+            //假设accessToken没有过期
+            if(!accessTokenExpired) {
+                oauth2Token.setExpireIn(jwtUtil.getExpiredSeconds(expiredTimestamp));
+                stringRedisTemplate.opsForValue().setIfPresent(redisKey, JsonUtil.ObjectToJson(oauth2Token));
+                return  oauth2Token;
+            }
+            oauth2Token = jwtUtil.refreshAccessToken(oauth2Token);
+
+
+            stringRedisTemplate.opsForValue().setIfPresent(redisKey, JsonUtil.ObjectToJson(oauth2Token));
             return oauth2Token;
         }
         catch (RedisSystemException e) {
@@ -128,20 +141,12 @@ public class AuthenticationServiceImpl {
             if(!StringUtils.equals(refreshTokenValue, oldRefreshToken)) {
                 throw ServiceExceptionUtil.exception(ErrorCoceEnum.OAUTH_INVALID_REFRESH_TOKEN_NOT_FOUND.getCode());
             }
-//            String accessTokenValue = oauth2Token.getAccessToken();
-//            params = jwtTokenEnhancer.decode(accessTokenValue);
-//            Long expired = (Long)params.get("exp");
-//            //accessToken过期了
-//            if(System.currentTimeMillis() > expired) {
-//
-//            }
-            String newAccessToken = jwtUtil.createAccessTokenValue((String)params.get("user_name"), (List<String>)params.get("roles"), (List<String>)params.get("authorities"), (Long)params.get("client_id"));
-            oauth2Token.setAccessToken(newAccessToken);
+            oauth2Token = jwtUtil.refreshAccessToken(oauth2Token);
             String oauth2TokenValue = JsonUtil.ObjectToJson(oauth2Token);
             if(null == oauth2TokenValue) {
                 throw ServiceExceptionUtil.exception(ErrorCoceEnum.SERVICE_INTERNAL_ERROR.getCode());
             }
-            stringRedisTemplate.opsForValue().set(redisKey, oauth2TokenValue);
+            stringRedisTemplate.opsForValue().setIfPresent(redisKey, oauth2TokenValue);
             return oauth2Token;
         }
         catch (RedisSystemException e) {

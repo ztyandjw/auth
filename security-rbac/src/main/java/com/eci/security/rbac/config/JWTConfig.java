@@ -29,9 +29,11 @@ public class JWTConfig {
      */
     private Long remember = 604800000L;
 
-    private Long accessTokenExpireSeconds = 600L;
+    //10分钟
+    private Long accessTokenExpireSeconds = 60L;
 
-    private Long refreshTokenExpireSeconds = 3000L;
+    //20分钟
+    private Long refreshTokenExpireSeconds = 1200L;
 
     private String redisJwtPrefix = "security:jwt:";
 

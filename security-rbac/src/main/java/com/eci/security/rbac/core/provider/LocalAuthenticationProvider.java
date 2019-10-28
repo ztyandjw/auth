@@ -7,6 +7,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -16,7 +17,6 @@ import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper
 import org.springframework.security.core.userdetails.*;
 import org.springframework.security.core.userdetails.cache.NullUserCache;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
@@ -24,7 +24,7 @@ import org.springframework.util.Assert;
  */
 
 
-
+@Order(Integer.MIN_VALUE + 10)
 public class LocalAuthenticationProvider implements
         AuthenticationProvider, InitializingBean, MessageSourceAware {
 

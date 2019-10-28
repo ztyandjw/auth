@@ -1,6 +1,7 @@
 package com.eci.security.rbac.config;
 
 
+import com.eci.security.rbac.core.provider.MyAuthenticationManager;
 import com.eci.security.rbac.util.JwtAccessTokenConverter;
 import com.eci.security.rbac.core.provider.LocalAuthenticationProvider;
 import com.eci.security.rbac.core.provider.LocalUserDetailService;
@@ -9,14 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import org.springframework.security.oauth2.provider.token.TokenStore;
 import sun.misc.BASE64Encoder;
+
+import java.util.List;
 
 /**
  * @author T1m Zhang(49244143@qq.com) 2019/9/19.
@@ -44,10 +47,17 @@ public class MySecurityCongiguration extends WebSecurityConfigurerAdapter {
         return localAuthenticationProvider;
     }
 
+
     @Override
     @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
+    }
+
+
+    @Bean
+    public MyAuthenticationManager myProviderManager(List<AuthenticationProvider> providers) throws Exception {
+        return new MyAuthenticationManager(providers);
     }
 
     @Bean
@@ -81,11 +91,11 @@ public class MySecurityCongiguration extends WebSecurityConfigurerAdapter {
 
 
 
-    public static void main(String[] args) {
-        BCryptPasswordEncoder s = new BCryptPasswordEncoder();
-
-        System.out.println(s.encode("12345611"));
-    }
+//    public static void main(String[] args) {
+//        BCryptPasswordEncoder s = new BCryptPasswordEncoder();
+//
+//        System.out.println(s.encode("12345611"));
+//    }
 
 
 }

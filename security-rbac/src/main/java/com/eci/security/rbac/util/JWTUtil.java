@@ -39,6 +39,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.Key;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -62,6 +63,8 @@ public class JWTUtil {
 
     private  static final BASE64Encoder base64Encoder = new BASE64Encoder();
 
+    @Autowired
+    private JwtAccessTokenConverter jwtTokenEnhancer;
 
     private String getBase64EncodedSecretKey(String key) throws UnsupportedEncodingException {
         byte[] bytes;
@@ -93,6 +96,22 @@ public class JWTUtil {
         builder.setExpiration(expireAccess);
         String accessToken = builder.compact();
         return accessToken;
+    }
+
+    public Oauth2Token refreshAccessToken(Oauth2Token oauth2Token) throws UnsupportedEncodingException {
+        String accessToken = oauth2Token.getAccessToken();
+        Map<String, Object>params = jwtTokenEnhancer.decode(accessToken);
+        String username = (String)params.get("user_name");
+        List<String> roles = (List<String>)params.get("roles");
+        List<String> authorities = (List<String>)params.get("authorities");
+        Long appId = (Long)params.get("client_id");
+        String newAccessToken = this.createAccessTokenValue(username, roles, authorities, appId);
+        oauth2Token.setAccessToken(newAccessToken);
+        ZoneId myZone = ZoneId.of("Asia/Shanghai");
+        LocalDateTime now = LocalDateTime.now(myZone);
+        LocalDateTime expireAccessLocalDate = now.plusSeconds(jwtConfig.getAccessTokenExpireSeconds());
+        oauth2Token.setExpireIn(ChronoUnit.SECONDS.between(now, expireAccessLocalDate));
+        return oauth2Token;
     }
 
 
@@ -143,13 +162,31 @@ public class JWTUtil {
         return oauth2Token;
     }
 
-    //验证refresh token是否过期
-    private boolean isExpired(OAuth2RefreshToken refreshToken) {
-        if (refreshToken instanceof ExpiringOAuth2RefreshToken) {
-            ExpiringOAuth2RefreshToken expiringToken = (ExpiringOAuth2RefreshToken) refreshToken;
-            return expiringToken.getExpiration() == null
-                    || System.currentTimeMillis() > expiringToken.getExpiration().getTime();
+//    //验证refresh token是否过期
+//    private boolean isExpired(OAuth2RefreshToken refreshToken) {
+//        if (refreshToken instanceof ExpiringOAuth2RefreshToken) {
+//            ExpiringOAuth2RefreshToken expiringToken = (ExpiringOAuth2RefreshToken) refreshToken;
+//            return expiringToken.getExpiration() == null
+//                    || System.currentTimeMillis() > expiringToken.getExpiration().getTime();
+//        }
+//        return false;
+//    }
+
+    public boolean isExpired(String token) {
+        Map<String, Object>params = jwtTokenEnhancer.decode(token);
+        Long expired = (Long)params.get("exp") * 1000;
+        //没有过期
+        if( System.currentTimeMillis() < expired) {
+            return false;
         }
-        return false;
+        return true;
     }
+
+    public long getExpiredSeconds(long expiredTimestamp) {
+        ZoneId myZone = ZoneId.of("Asia/Shanghai");
+        LocalDateTime now = LocalDateTime.now(myZone);
+        LocalDateTime expiredLocalDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(expiredTimestamp), myZone);
+        return ChronoUnit.SECONDS.between(now, expiredLocalDate);
+    }
+
 }

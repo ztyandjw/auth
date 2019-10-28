@@ -1,22 +1,18 @@
 package com.eci.security.rbac.core.provider;
 
-import com.eci.security.rbac.common.dataobject.AppDO;
 import com.eci.security.rbac.common.dataobject.ResourceDO;
 import com.eci.security.rbac.common.dataobject.RoleDO;
 import com.eci.security.rbac.common.dataobject.UserDO;
 import com.eci.security.rbac.common.vo.UserPrincipal;
-import com.eci.security.rbac.dao.AppDAO;
 import com.eci.security.rbac.dao.ResourceDAO;
 import com.eci.security.rbac.dao.RoleDAO;
 import com.eci.security.rbac.dao.UserDAO;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Configuration
 public class LocalUserDetailService implements UserDetailsService {
-    
+
     @Autowired
     private UserDAO userDAO;
 
