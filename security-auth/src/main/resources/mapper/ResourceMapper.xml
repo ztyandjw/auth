@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eci.security.auth.dao.ResourceDAO">
+
+    <sql id="FIELDS">
+        id, resource_name, url, type, permission, method, sec_resource.app_id, sec_resource.deleted, sec_resource.create_time, sec_resource.update_time, sec_resource.update_user, sec_resource.create_user
+    </sql>
+
+    <select id="getResourceByRoleIds"  resultType="ResourceDO">
+        SELECT
+        <include refid="FIELDS" />
+        FROM sec_resource left
+        join sec_role_resource on sec_resource.id = sec_role_resource.resource_id where
+        sec_role_resource.role_id IN
+        <foreach collection="roleIds" item="roleId" separator="," open="(" close=")">
+            #{roleId}
+        </foreach>
+        ;
+    </select>
+
+
+</mapper>

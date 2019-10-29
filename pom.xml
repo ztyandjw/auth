@@ -7,7 +7,7 @@
     <artifactId>security-all</artifactId>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>security-rbac</module>
+        <module>security-auth</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
