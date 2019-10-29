@@ -189,4 +189,16 @@ public class JWTUtil {
         return ChronoUnit.SECONDS.between(now, expiredLocalDate);
     }
 
+    public long getAccessExpiredTimestamp(String accessToken) {
+        Map<String, Object>params = jwtTokenEnhancer.decode(accessToken);
+        Long expiredTimestamp = (Long)params.get("exp") * 1000;
+        return expiredTimestamp;
+    }
+
+//    public long getRefreshExpiredTimestamp(String refreshToken) {
+//        Map<String, Object>params = jwtTokenEnhancer.decode(refreshToken);
+//        Long expiredTimestamp = (Long)params.get("exp") * 1000;
+//        return expiredTimestamp;
+//    }
+
 }

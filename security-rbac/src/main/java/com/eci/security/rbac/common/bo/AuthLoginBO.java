@@ -28,6 +28,6 @@ public class AuthLoginBO implements Serializable{
     @Length(max = 10, message = "密码不能超过10个字符")
     private String password;
     @NotBlank(message = "providerType不能为空")
-    @Pattern(regexp = "local", message = "providerType必须为local|ad")
+    @Pattern(regexp = "local", message = "providerType必须为local")
     private String providerType;
 }
