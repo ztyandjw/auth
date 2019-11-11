@@ -20,7 +20,7 @@ public class AuthLoginBO implements Serializable{
     private Long appId;
     @NotBlank(message = "用户名不能为空")
     @Length(min = 3, message = "用户名不能小于3个字符")
-    @Length(max = 10, message = "用户名不能超过10个字符")
+    @Length(max = 20, message = "用户名不能超过10个字符")
 //    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", message = "用户昵称限制：最多20字符，包含文字、字母和数字")
     private String username;
     @NotBlank(message = "密码不能为空")

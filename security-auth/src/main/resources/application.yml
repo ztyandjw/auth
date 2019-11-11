@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: security-auth
   redis:
     host: 10.100.100.20
     port: 6379
@@ -23,6 +25,12 @@ spring:
     password: root
     initialization-mode: always
     continue-on-error: true
+
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://10.2.10.8:8761/eureka/
 
 
 
